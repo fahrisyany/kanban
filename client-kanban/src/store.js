@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import db from './firebase/firebase';
+import db from "./firebase/firebase";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -8,12 +8,11 @@ export default new Vuex.Store({
     title: "Group Chat:",
     links: [],
     items: {
-      backLog: [],
+      // backLog: [],
       todo: [],
       inProgress: [],
       done: []
     },
-    nextId: 1,
     kanban: null
   },
 
@@ -33,22 +32,56 @@ export default new Vuex.Store({
       state.links = [];
     },
     ADD_ITEM(state, item) {
-      
-      state.items.backLog.push(Object.assign(item, { id: state.nextId }));
-      state.nextId++;
+
+      if (item.status === 1) {
+        state.items.todo.push(item, { id: state.nextId });
+      }
+      if (item.status === 2) {
+        state.items.inProgress.push(item, { id: state.nextId });
+      }
+      if (item.status === 3) {
+        state.items.done.push(item, { id: state.nextId });
+      }
     },
+    UPDATE_ITEM(state, { items, id }) {
+
+      // db.ref("kanban"+items).set({status:id})
+
+      // db.ref(`/kanban/${items.kanban.status}/${id}`).remove(items)
+
+      state.items[id] = items;
+
+      console.log(`=++++++`,items);
+      
+ 
+    },
+
     REMOVE_ALL_ITEM: state => {
       state.items.backLog = [];
       state.items.todo = [];
       state.items.inProgress = [];
       state.items.done = [];
       state.nextId = 1;
+      db.ref(`/kanban/`).remove();
+
     },
-    UPDATE_ITEM(state, { items, id }) {
-      state.items[id] = items;
-    },
-    kanbanDatabase (state, payload) {
-      state.kanban = payload
+    kanbanDatabase(state, payload) {
+      state.kanban = payload;
+      payload.forEach(element => {
+        if (element.status) {
+          if (element.status == 1) {
+            state.items.todo.push(element);
+            console.log(`pppp`, state.items.todo);
+          }
+          if (element.status == 2) {
+            state.items.inProgress.push(element);
+          }
+          if (element.status == 3) {
+            state.items.done.push(element);
+          }
+        }
+        console.log(`----->`, element.status);
+      });
     }
   },
   actions: {
@@ -71,15 +104,15 @@ export default new Vuex.Store({
       });
     },
 
-    getItemFromDB ({ commit }) {
-      db.ref('kanban').on('value', function(snapshot) {
-        let data = snapshot.val()
+    getItemFromDB({ commit }) {
+      db.ref("kanban").on("value", function(snapshot) {
+        let data = snapshot.val();
         let dataArr = [];
         for (let keys in data) {
-          dataArr.push(data[keys])
+          dataArr.push(data[keys]);
         }
-        commit('kanbanDatabase', dataArr)
-      })
+        commit("kanbanDatabase", dataArr);
+      });
     }
   }
 });

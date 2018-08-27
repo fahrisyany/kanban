@@ -7,11 +7,11 @@
         </h4>
         </h3>
       <div class="card-body">
-          <Draggable v-model="draggables" :options="{ group: 'default' }" >
+          <draggable v-model="draggables" :options="{ group: 'default' }" >
           <div v-for="(item) in items" :key="item.id">
-         
               <item :item="item">
               </item>
+         {{item.status}}
           </div>
         </Draggable>
       </div>
@@ -34,19 +34,18 @@ export default {
     Draggable
   },
   computed: {
-    itemCount() {
-      if (!this.items) return "";
-      if (this.items.length === 1) return "1 task";
-      return `${this.items.length} tasks`;
-    },
-
+ 
     draggables: {
       get() {
-        return this.items;
+        return Object.values(this.items)
+        console.log(`===>`,Object.values(this.items));
+        
       },
       set(items) {
         this.$store.commit("UPDATE_ITEM", {
+
           items,
+          // items.status
           id: this.id
         });
       }

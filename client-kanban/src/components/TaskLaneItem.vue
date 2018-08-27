@@ -27,7 +27,6 @@
 <script>
 
 export default {
-  name: "TaskLaneItem",
   props: ["item"]
 };
 // console.log(this.item);

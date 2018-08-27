@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import db from '../firebase/firebase.js';
+import db from "../firebase/firebase.js";
 
 export default {
   name: "NewItemForm",
@@ -29,18 +29,15 @@ export default {
   },
   methods: {
     submitForm() {
-      this.$router.push("/board");
+      this.$router.go("/board");
       if (this.itemText) {
-        db.ref('kanban').push({
+        db.ref("kanban").push({
           textTitle: this.itemText,
           textDesc: this.itemDescription,
-          textAssigned: this.itemAssignedTo
-        })
-        this.$store.commit("ADD_ITEM", {
-          textTitle: this.itemText,
-          textDesc: this.itemDescription,
-          textAssigned: this.itemAssignedTo
+          textAssigned: this.itemAssignedTo,
+          status: 1
         });
+
       }
       this.itemText = "";
       this.itemDescription = "";

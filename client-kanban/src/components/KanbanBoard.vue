@@ -1,18 +1,12 @@
 <template>
     <div class="board">
 
-<div class="columns is-desktop">
-
-
-
-<div class="column">
-     <TaskLane id="backLog" title="BackLog" :items="kanban"></TaskLane>
-</div>
-
-
+<div class="columns is-desktop"> 
 <div class="column">
     <TaskLane id="todo" title="To-Do" :items="items.todo"></TaskLane>
   </div>
+
+
 <div class="column">
         <task-lane id="inProgress" title="In progress" :items="items.inProgress"></task-lane>
 </div>
@@ -20,7 +14,7 @@
 
 
 <div class="column">
-        <task-lane id="done" title="Done" :items="items.doneItems"></task-lane>
+        <task-lane id="done" title="Done" :items="items.done"></task-lane>
 </div>
 
 
@@ -29,23 +23,25 @@
 </template>
 
 <script>
+import db from "../firebase/firebase.js";
 import { mapState, mapActions } from "vuex";
 import TaskLane from "./TaskLane";
 
 export default {
   name: "KanbanBoard",
+   data() {
+    return {
+      kanbanTask: "",
+      
+    };
+  },
   components: {
     TaskLane
   },
   computed: {
     ...mapState([
     'datakanban', 'items', 'kanban'
-  //   {
-  //   todoBacklog: s => s.items.backLog,
-  //   todoItems: s => s.items.todo,
-  //   inProgressItems: s => s.items.inProgress,
-  //   doneItems: s => s.items.done
-  // }
+
   ])
   },
   created() {
@@ -55,6 +51,16 @@ export default {
     ...mapActions([
       'getItemFromDB'
     ])
+  },
+    
+  mounted() {
+  let self = this
+    db.ref("/kanban").on("value", function(snapshot) {
+      let data = snapshot.val()
+      self.kanbanTask = data;
+      console.log(`==>`,self.kanbanTask);
+    });
+
   }
 };
 </script>

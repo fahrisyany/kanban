@@ -8,6 +8,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
+import db from "../firebase/firebase.js";
 
 export default {
   name: "Stats",
@@ -22,13 +23,13 @@ export default {
   computed: {
     ...mapGetters(["countLinks"])
   },
-  methods:{
-    ...mapMutations(['REMOVE_ALL']),
-    ...mapActions(['removeAll']),
-    removeAllLinks(){
-      this.removeAll().then(()=>{
-        // this.msg='Delete all Chat Success!'
-      })
+  methods: {
+    ...mapMutations(["REMOVE_ALL"]),
+    ...mapActions(["removeAll"]),
+    removeAllLinks() {
+      this.removeAll().then(() => {
+        db.ref(`/chat/`).remove();
+      });
     }
   }
 };
@@ -51,16 +52,16 @@ a {
   color: #42b983;
 }
 button {
-    padding: 10px;
-    margin-top: 30px;
-    width: 100%;
-    background: none;
-    border: 1px solid lightgray;
-    outline: 0;
-    cursor: pointer;
+  padding: 10px;
+  margin-top: 30px;
+  width: 100%;
+  background: none;
+  border: 1px solid lightgray;
+  outline: 0;
+  cursor: pointer;
 }
 
-.stats{
+.stats {
   text-align: center;
 }
 </style>

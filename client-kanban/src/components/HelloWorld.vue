@@ -8,8 +8,8 @@
     <input class="link-input" type="text" placeholder="type here to chat" v-model="newLink">
   </form>
   <ul>
-    <li v-for="(link,index) in links" :key="index">
-      {{link}}
+    <li v-for="(link,index) in kanbanChat" :key="index">
+      {{link.newLink}}
       <button v-on:click="removeLinks(index)" class="rm">Remove</button>
     </li>
   </ul>
@@ -24,15 +24,17 @@
 </template>
 
 <script>
+import db from "../firebase/firebase.js";
 import { mapState, mapMutations, mapActions } from "vuex";
-
 import Stats from "../components/Stats.vue";
+// import { functions } from "firebase";
 
 export default {
   name: "HelloWorld",
   data() {
     return {
-      newLink: ""
+      newLink: "",
+      kanbanChat: []
     };
   },
   components: {
@@ -47,13 +49,30 @@ export default {
   methods: {
     ...mapMutations(["ADD_LINK"]),
     ...mapActions(["removeLink"]),
+
     addLink() {
+      db.ref("chat").push({
+        newLink: this.newLink
+      });
       this.ADD_LINK(this.newLink);
+
       this.newLink = "";
     },
     removeLinks(link) {
+      db.ref(`/chat/${link}`).remove()
       this.removeLink(link);
     }
+  },
+
+  
+  mounted() {
+  let self = this
+    db.ref("/chat").on("value", function(snapshot) {
+      let data = snapshot.val()
+      self.kanbanChat = data;
+      console.log(`==>`,this.kanbanChat);
+    });
+
   }
 };
 </script>
